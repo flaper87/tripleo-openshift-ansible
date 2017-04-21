@@ -61,6 +61,21 @@ parameter_defaults:
   NeutronServicePlugins: ""
 EOF_CAT
 
+cat > $HOME/stack-openshift-ansible.yaml <<-EOF_CAT
+heat_template_version: ocata
+
+resources:
+  execution:
+    type: OS::Mistral::ExternalResource
+    properties:
+      actions:
+        CREATE:
+          workflow: openshift-ansible
+      input:
+        inventory: $HOME/ansible-inventory
+        playbook: $HOME/openshift-ansible/playbooks/byo/config.yml
+EOF_CAT
+
 LOCAL_IP=${LOCAL_IP:-`/usr/sbin/ip -4 route get 8.8.8.8 | awk {'print $7'} | tr -d '\n'`}
 
 cat > $HOME/run.sh <<-EOF_CAT
