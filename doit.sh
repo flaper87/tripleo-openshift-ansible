@@ -1,19 +1,13 @@
 #!/usr/bin/env bash
 set -x
 
+git submodule update
+
 sudo setenforce permissive
 
-sudo yum -y install curl vim-enhanced telnet epel-release
-sudo yum install -y https://dprince.fedorapeople.org/tmate-2.2.1-1.el7.centos.x86_64.rpm
-
-cd
-git clone https://git.openstack.org/openstack/tripleo-repos
-cd tripleo-repos
-sudo ./setup.py install
-cd
-sudo tripleo-repos current
-
 sudo yum -y update
+sudo yum -y install curl vim-enhanced telnet
+sudo yum install -y https://dprince.fedorapeople.org/tmate-2.2.1-1.el7.centos.x86_64.rpm
 
 # these avoid warning for the cherry-picks below ATM
 if [ ! -f $HOME/.gitconfig ]; then
@@ -29,8 +23,8 @@ cd
 git clone git://git.openstack.org/openstack/heat
 cd heat
 git fetch git://git.openstack.org/openstack/heat refs/changes/64/420664/9 && git cherry-pick FETCH_HEAD
-sudo python setup.py develop
-systemctl restart openstack-heat
+sudo python setup.py install
+sudo systemctl restart openstack-heat
 
 # TRIPLEO HEAT TEMPLATES
 cd
@@ -39,14 +33,14 @@ cd tripleo-heat-templates
 
 # MISTRAL ANSIBLE ACTION
 sudo rm -Rf /usr/lib/python2.7/site-packages/mistral_ansible*
-ln -s tripleo-openshift-ansible/mistral-ansible-actions .
+ln -sf tripleo-openshift-ansible/mistral-ansible-actions .
 cd mistral-ansible-actions
 sudo python setup.py develop
-mistral-db-manage populate
+sudo mistral-db-manage populate
 cd
 
 # OPENSHIFT ANSIBLE
-ln -s tripleo-openshift-ansible/openshift-ansible .
+ln -sf tripleo-openshift-ansible/openshift-ansible .
 cd openshift-ansible
 sudo python setup.py develop
 cd
