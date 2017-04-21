@@ -1,0 +1,14 @@
+---
+version: '2.0'
+
+run_ansible_playbook:
+  type: direct
+  input:
+    - inventory
+    - playbook
+  tasks:
+    install_openshift:
+      action: ansible-playbook
+      input:
+        inventory: "<% $.inventory %>"
+        playbook: "<% $.playbook %>"
