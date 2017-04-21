@@ -156,7 +156,7 @@ time openstack overcloud deploy \
 
 ### --stop_docs
 # We don't always get a useful error code from the openstack deploy command,
-# so check `openstack stack list` for a CREATE_COMPLETE status.
+# so check openstack stack list for a CREATE_COMPLETE status.
 if ! openstack stack list | grep -q 'CREATE_COMPLETE'; then
         # get the failures list
     openstack stack failures list overcloud --long > /home/stack/failed_deployment_list.log || true
