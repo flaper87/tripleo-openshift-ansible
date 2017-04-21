@@ -76,7 +76,7 @@ resources:
         playbook: $HOME/openshift-ansible/playbooks/byo/config.yml
 EOF_CAT
 
-cat > $HOME/tripleo-heat-templates/openshift.yaml <<-EOF_CAT
+cat > $HOME/tripleo-heat-templates/environments/openshift.yaml <<-EOF_CAT
 resource_registry:
   OS::TripleO::Services::Docker: ../puppet/services/docker.yaml
 EOF_CAT
