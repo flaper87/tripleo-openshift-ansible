@@ -1,0 +1,12 @@
+heat_template_version: ocata
+
+resources:
+  execution:
+    type: OS::Mistral::ExternalResource
+    properties:
+      actions:
+        CREATE:
+          workflow: openshift-ansible
+      input:
+        inventory: /home/flaper87/workspace/openstack/mistral/data/ansible-inventory
+        playbook: /home/flaper87/workspace/openstack/mistral/data/openshift-ansible/playbooks/byo/config.yml
