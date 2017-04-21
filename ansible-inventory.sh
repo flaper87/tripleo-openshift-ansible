@@ -31,7 +31,7 @@ for type in ${MASTERS[@]}; do
     for server in $(nova list | grep ACTIVE | awk {'print $4'}); do
         if [[ $server == *"$type"* ]]; then
             ip=$(nova list | grep $server | awk {'print $12'} | sed s/ctlplane=//g)
-            echo "$ip openshift_public_ip=$ip openshift_ip=$ip openshift_public_hostname=$ip openshift_hostname$ip containerized=True connect_to=$ip openshift_schedulable=True openshift_excluder_on=False" >> /tmp/inventory
+            echo "$ip openshift_public_ip=$ip openshift_ip=$ip openshift_public_hostname=$ip openshift_hostname=$ip containerized=True connect_to=$ip openshift_schedulable=True openshift_excluder_on=False" >> /tmp/inventory
         fi
     done
     echo "" >> /tmp/inventory
@@ -42,7 +42,7 @@ for type in ${NODES[@]}; do
     for server in $(nova list | grep ACTIVE | awk {'print $4'}); do
         if [[ $server == *"$type"* ]]; then
             ip=$(nova list | grep $server | awk {'print $12'} | sed s/ctlplane=//g)
-            echo "$ip openshift_public_ip=$ip openshift_ip=$ip openshift_public_hostname=$ip openshift_hostname$ip containerized=True connect_to=$ip openshift_schedulable=True openshift_excluder_on=False" >> /tmp/inventory
+            echo "$ip openshift_public_ip=$ip openshift_ip=$ip openshift_public_hostname=$ip openshift_hostname=$ip containerized=True connect_to=$ip openshift_schedulable=True openshift_excluder_on=False" >> /tmp/inventory
         fi
     done
     echo "" >> /tmp/inventory
