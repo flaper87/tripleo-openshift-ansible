@@ -24,7 +24,7 @@ git clone git://git.openstack.org/openstack/heat
 cd heat
 git fetch git://git.openstack.org/openstack/heat refs/changes/64/420664/9 && git cherry-pick FETCH_HEAD
 sudo python setup.py install
-sudo systemctl restart openstack-heat
+sudo systemctl restart openstack-heat-*
 
 # TRIPLEO HEAT TEMPLATES
 cd
