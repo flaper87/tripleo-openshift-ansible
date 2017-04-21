@@ -5,9 +5,9 @@ git submodule update
 
 sudo setenforce permissive
 
-sudo yum -y update
-sudo yum -y install curl vim-enhanced telnet
-sudo yum install -y https://dprince.fedorapeople.org/tmate-2.2.1-1.el7.centos.x86_64.rpm
+#sudo yum -y update
+#sudo yum -y install curl vim-enhanced telnet
+#sudo yum install -y https://dprince.fedorapeople.org/tmate-2.2.1-1.el7.centos.x86_64.rpm
 
 # these avoid warning for the cherry-picks below ATM
 if [ ! -f $HOME/.gitconfig ]; then
@@ -120,8 +120,8 @@ source /home/stack/stackrc
 ### --stop_docs
 # Wait until there are hypervisors available.
 while true; do
-    count=$(openstack hypervisor stats show -c count -f value)
-    if [ $count -gt 0 ]; then
+    count=\$(openstack hypervisor stats show -c count -f value)
+    if [ \$count -gt 0 ]; then
         break
     fi
 done
@@ -152,7 +152,7 @@ time openstack overcloud deploy \
     -r $HOME/openshift_roles_data.yaml \
     --validation-warnings-fatal \
     --ntp-server pool.ntp.org \
-    ${DEPLOY_ENV_YAML:+-e $DEPLOY_ENV_YAML} "$@" && status_code=0 || status_code=$?
+    \${DEPLOY_ENV_YAML:+-e \$DEPLOY_ENV_YAML} "\$@" && status_code=0 || status_code=\$?
 
 ### --stop_docs
 # We don't always get a useful error code from the openstack deploy command,
@@ -162,18 +162,18 @@ if ! openstack stack list | grep -q 'CREATE_COMPLETE'; then
     openstack stack failures list overcloud --long > /home/stack/failed_deployment_list.log || true
 
     # get any puppet related errors
-    for failed in $(openstack stack resource list \
+    for failed in \$(openstack stack resource list \
         --nested-depth 5 overcloud | grep FAILED |
         grep 'StructuredDeployment ' | cut -d '|' -f3)
     do
-    echo "heat deployment-show out put for deployment: $failed" >> /home/stack/failed_deployments.log
+    echo "heat deployment-show out put for deployment: \$failed" >> /home/stack/failed_deployments.log
     echo "######################################################" >> /home/stack/failed_deployments.log
-    heat deployment-show $failed >> /home/stack/failed_deployments.log
+    heat deployment-show \$failed >> /home/stack/failed_deployments.log
     echo "######################################################" >> /home/stack/failed_deployments.log
-    echo "puppet standard error for deployment: $failed" >> /home/stack/failed_deployments.log
+    echo "puppet standard error for deployment: \$failed" >> /home/stack/failed_deployments.log
     echo "######################################################" >> /home/stack/failed_deployments.log
     # the sed part removes color codes from the text
-    heat deployment-show $failed |
+    heat deployment-show \$failed |
         jq -r .output_values.deploy_stderr |
         sed -r "s:\x1B\[[0-9;]*[mK]::g" >> /home/stack/failed_deployments.log
     echo "######################################################" >> /home/stack/failed_deployments.log
