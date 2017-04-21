@@ -21,7 +21,11 @@ masters
 [OSEv3:vars]
 openshift_use_dnsmasq=False
 ansible_ssh_user=heat-admin
-deployment_type=openshift-enterprise
+ansible_become=true
+ansible_become_user=root
+openshift_deployment_type=origin
+openshift_release=v1.5
+openshift_image_tag=v1.5.0
 enable_excluders=False
 
 EOF_CAT
