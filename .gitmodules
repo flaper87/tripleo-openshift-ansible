@@ -1,0 +1,6 @@
+[submodule "openshift-ansible"]
+	path = openshift-ansible
+	url = https://github.com/openshift/openshift-ansible/
+[submodule "mistral-ansible-actions"]
+	path = mistral-ansible-actions
+	url = https://github.com/flaper87/mistral-ansible-actions
