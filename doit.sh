@@ -28,6 +28,18 @@ sudo systemctl restart openstack-heat-*
 
 # TRIPLEO HEAT TEMPLATES
 cd
+git clone git://git.openstack.org/openstack/tripleo-validations
+cd tripleo-validations
+# Show all roles in inventory
+git fetch git://git.openstack.org/openstack/tripleo-validations refs/changes/33/450233/8 && git cherry-pick FETCH_HEAD
+
+# Add host list by service to inventory
+git fetch git://git.openstack.org/openstack/tripleo-validations refs/changes/72/457972/2 && git cherry-pick FETCH_HEAD
+
+sudo python setup.py develop
+
+# TRIPLEO HEAT TEMPLATES
+cd
 git clone git://git.openstack.org/openstack/tripleo-heat-templates
 cd tripleo-heat-templates
 
