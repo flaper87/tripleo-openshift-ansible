@@ -10,9 +10,7 @@
     - add_host: name={{item}} groups=OSEv3
       with_items: "{{groups['overcloud']}}"
 
-- name: Set vars for OSEv3
-  hosts: OSEv3
-  gather_Facts: no
+- hosts: OSEv3
   vars:
     ansible_become: true
     ansible_become_user: root
@@ -24,10 +22,7 @@
     openshift_image_tag: v1.5.0
     enable_excluders: False
 
-
-- name: Set vars for masters group
-  hosts: nodes
-  gather_Facts: no
+- hosts: nodes
   vars:
     containerized: true
     openshift_schedulable: true
@@ -38,9 +33,7 @@
     openshift_public_ip: "{{inventory_hostname}}"
     openshift_public_hostname: "{{inventory_hostname}}"
 
-- name: Set vars for nodes group
-  hosts: nodes
-  gather_Facts: no
+- hosts: masters
   vars:
     containerized: true
     openshift_schedulable: true
