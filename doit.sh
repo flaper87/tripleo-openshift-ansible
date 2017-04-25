@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 set -x
 
-git submodule update
+git submodule update --init --recursive
 
 sudo setenforce permissive
 
-#sudo yum -y update
-#sudo yum -y install curl vim-enhanced telnet
-#sudo yum install -y https://dprince.fedorapeople.org/tmate-2.2.1-1.el7.centos.x86_64.rpm
+sudo yum -y install curl vim-enhanced telnet epel-release
+sudo yum install -y https://dprince.fedorapeople.org/tmate-2.2.1-1.el7.centos.x86_64.rpm
 
 # these avoid warning for the cherry-picks below ATM
 if [ ! -f $HOME/.gitconfig ]; then
