@@ -6,6 +6,8 @@ git submodule update --init --recursive
 sudo setenforce permissive
 
 sudo yum -y install curl vim-enhanced telnet epel-release
+sudo yum install -y centos-release-openshift-origin.noarch
+sudo yum install -y openshift-ansible-playbooks openshift-ansible-roles
 sudo yum install -y https://dprince.fedorapeople.org/tmate-2.2.1-1.el7.centos.x86_64.rpm
 
 # these avoid warning for the cherry-picks below ATM
