@@ -30,7 +30,7 @@ cd
 git clone git://git.openstack.org/openstack/tripleo-validations
 cd tripleo-validations
 # Show all roles in inventory
-git fetch git://git.openstack.org/openstack/tripleo-validations refs/changes/33/450233/8 && git cherry-pick FETCH_HEAD
+git fetch git://git.openstack.org/openstack/tripleo-validations refs/changes/33/450233/9 && git cherry-pick FETCH_HEAD
 
 # Add host list by service to inventory
 git fetch git://git.openstack.org/openstack/tripleo-validations refs/changes/72/457972/2 && git cherry-pick FETCH_HEAD
@@ -43,20 +43,21 @@ git clone git://git.openstack.org/openstack/tripleo-heat-templates
 cd tripleo-heat-templates
 
 # MISTRAL ANSIBLE ACTION
+cd
 sudo rm -Rf /usr/lib/python2.7/site-packages/mistral_ansible*
 ln -sf tripleo-openshift-ansible/mistral-ansible-actions .
 cd mistral-ansible-actions
 sudo python setup.py develop
 sudo mistral-db-manage populate
-cd
 
 # OPENSHIFT ANSIBLE
+cd
 ln -sf tripleo-openshift-ansible/openshift-ansible .
 cd openshift-ansible
-sudo python setup.py develop
-cd
+sudo python setup.py install
 
 # UPLOAD WORKFLOW
+cd
 mistral workflow-create --public tripleo-openshift-ansible/workflow-openshift-ansible.yaml
 
 # this is how you inject an admin password
