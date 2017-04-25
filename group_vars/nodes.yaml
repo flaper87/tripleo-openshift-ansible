@@ -1,0 +1,9 @@
+containerized: true
+openshift_schedulable: true
+openshift_excluder_on: false
+
+connect_to: {{inventory_hostname}}
+openshift_ip: {{inventory_hostname}}
+openshift_hostname: {{inventory_hostname}}
+openshift_public_ip: {{inventory_hostname}}
+openshift_public_hostname: {{inventory_hostname}}
