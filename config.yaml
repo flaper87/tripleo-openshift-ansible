@@ -43,3 +43,5 @@
     openshift_hostname: "{{inventory_hostname}}"
     openshift_public_ip: "{{inventory_hostname}}"
     openshift_public_hostname: "{{inventory_hostname}}"
+
+- include: openshift-ansible/playbooks/byo/config.yml
