@@ -58,6 +58,7 @@ sudo python setup.py install
 
 # UPLOAD WORKFLOW
 cd
+source ~/stackrc
 mistral workflow-create --public tripleo-openshift-ansible/workflow-openshift-ansible.yaml
 
 # this is how you inject an admin password
