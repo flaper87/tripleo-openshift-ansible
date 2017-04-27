@@ -43,6 +43,9 @@ sudo python setup.py develop
 cd
 git clone git://git.openstack.org/openstack/tripleo-heat-templates
 cd tripleo-heat-templates
+ln -sf $HOME/tripleo-openshift-ansible/tht/openshift .
+cd environments
+ln -sf $HOME/tripleo-openshift-ansible/tht/environment.yaml openshift.yaml
 
 # MISTRAL ANSIBLE ACTION
 cd
@@ -91,10 +94,10 @@ resources:
         playbook: $HOME/openshift-ansible/playbooks/byo/config.yml
 EOF_CAT
 
-cat > $HOME/tripleo-heat-templates/environments/openshift.yaml <<-EOF_CAT
-resource_registry:
-  OS::TripleO::Services::Docker: ../puppet/services/docker.yaml
-EOF_CAT
+#cat > $HOME/tripleo-heat-templates/environments/openshift.yaml <<-EOF_CAT
+#resource_registry:
+#  OS::TripleO::Services::Docker: ../puppet/services/docker.yaml
+#EOF_CAT
 
 cat > $HOME/openshift_roles_data.yaml <<-EOF_CAT
 - name: Controller
@@ -104,12 +107,14 @@ cat > $HOME/openshift_roles_data.yaml <<-EOF_CAT
     - controller
   ServicesDefault:
     - OS::TripleO::Services::Docker
+    - OS::TripleO::Services::OpenShift
 - name: Compute
   CountDefault: 1
   HostnameFormatDefault: '%stackname%-novacompute-%index%'
   disable_upgrade_deployment: True
   ServicesDefault:
     - OS::TripleO::Services::Docker
+    - OS::TripleO::Services::OpenShift
 EOF_CAT
 
 LOCAL_IP=${LOCAL_IP:-`/usr/sbin/ip -4 route get 8.8.8.8 | awk {'print $7'} | tr -d '\n'`}

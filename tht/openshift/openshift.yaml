@@ -1,0 +1,75 @@
+heat_template_version: ocata
+
+description: Triggers a Mistral workflow for the deployment of Ceph
+
+parameters:
+  OpenShiftAnsibleWorkflowName:
+    type: string
+    description: Name of the Mistral workflow deploying Ceph
+    default: mistral-ceph-ansible
+
+resources:
+  openshift_ansible_workflow:
+    type: OS::Mistral::WorkflowExecution
+    properties:
+      workflow: {get_param: OpenShiftAnsibleWorkflowName}
+      input:
+        playbook:
+          - name: Register nodes
+            hosts: localhost
+
+            tasks:
+              - add_host: name={{item}} groups=nodes
+                with_items: "{{groups['compute']}}"
+              - add_host: name={{item}} groups=nodes
+                with_items: "{{groups['controller']}}"
+              - add_host: name={{item}} groups=masters
+                with_items: "{{groups['controller']}}"
+              - add_host: name={{item}} groups=OSEv3
+                with_items: "{{groups['overcloud']}}"
+    
+          - hosts: OSEv3
+            vars:
+              ansible_become: true
+              ansible_become_user: root
+              ansible_ssh_user: heat-admin
+              containerized: true
+              openshift_use_dnsmasq: False
+              openshift_deployment_type: origin
+              openshift_release: v1.5
+              openshift_image_tag: v1.5.0
+              enable_excluders: False
+          
+          - hosts: nodes
+            vars:
+              containerized: true
+              openshift_schedulable: true
+              openshift_excluder_on: false
+              connect_to: "{{inventory_hostname}}"
+              openshift_ip: "{{inventory_hostname}}"
+              openshift_hostname: "{{inventory_hostname}}"
+              openshift_public_ip: "{{inventory_hostname}}"
+              openshift_public_hostname: "{{inventory_hostname}}"
+          
+          - hosts: masters
+            vars:
+              containerized: true
+              openshift_schedulable: true
+              openshift_excluder_on: false
+              connect_to: "{{inventory_hostname}}"
+              openshift_ip: "{{inventory_hostname}}"
+              openshift_hostname: "{{inventory_hostname}}"
+              openshift_public_ip: "{{inventory_hostname}}"
+              openshift_public_hostname: "{{inventory_hostname}}"
+          
+          - include: openshift-ansible/playbooks/byo/config.yml
+
+        inventory:
+          compute:
+            hosts:
+              - get_attr: [RoleNetIpMap, Compute, ctlplane]
+          controller:
+            hosts:
+              - get_attr: [RoleNetIpMap, Controller, ctlplane]
+              
+          

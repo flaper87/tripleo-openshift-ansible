@@ -1,0 +1,7 @@
+resource_registry:
+  OS::TripleO::Services::Docker: ../puppet/services/docker.yaml
+  OS::TripleO::Services::OpenShift: ../openshift/openshift.yaml
+  
+parameter_defaults:
+  OvercloudControlFlavor: control
+  OvercloudComputeFlavor: compute
