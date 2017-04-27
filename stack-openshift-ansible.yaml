@@ -1,0 +1,12 @@
+heat_template_version: ocata
+
+resources:
+  execution:
+    type: OS::Mistral::ExternalResource
+    properties:
+      actions:
+        CREATE:
+          workflow: openshift-ansible
+      input:
+        inventory: /usr/bin/tripleo-ansible-inventory
+        playbook: /tmp/config.yaml
