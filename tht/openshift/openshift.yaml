@@ -1,18 +1,23 @@
 heat_template_version: ocata
 
-description: Triggers a Mistral workflow for the deployment of Ceph
+description: Triggers a Mistral workflow for the deployment of OpenShift
 
 parameters:
   OpenShiftAnsibleWorkflowName:
     type: string
-    description: Name of the Mistral workflow deploying Ceph
-    default: mistral-ceph-ansible
+    description: Name of the Mistral workflow deploying OpenShift
+    default: openshift-ansible
+  RoleNetIpMap:
+    default: {}
+    type: json
 
 resources:
   openshift_ansible_workflow:
-    type: OS::Mistral::WorkflowExecution
+    type: OS::Mistral::ExternalResource
     properties:
-      workflow: {get_param: OpenShiftAnsibleWorkflowName}
+      actions:
+        CREATE:
+          workflow: {get_param: OpenShiftAnsibleWorkflowName}
       input:
         playbook:
           - name: Register nodes
@@ -27,7 +32,7 @@ resources:
                 with_items: "{{groups['controller']}}"
               - add_host: name={{item}} groups=OSEv3
                 with_items: "{{groups['overcloud']}}"
-    
+
           - hosts: OSEv3
             vars:
               ansible_become: true
@@ -39,7 +44,7 @@ resources:
               openshift_release: v1.5
               openshift_image_tag: v1.5.0
               enable_excluders: False
-          
+
           - hosts: nodes
             vars:
               containerized: true
@@ -50,7 +55,7 @@ resources:
               openshift_hostname: "{{inventory_hostname}}"
               openshift_public_ip: "{{inventory_hostname}}"
               openshift_public_hostname: "{{inventory_hostname}}"
-          
+
           - hosts: masters
             vars:
               containerized: true
@@ -61,15 +66,25 @@ resources:
               openshift_hostname: "{{inventory_hostname}}"
               openshift_public_ip: "{{inventory_hostname}}"
               openshift_public_hostname: "{{inventory_hostname}}"
-          
-          - include: openshift-ansible/playbooks/byo/config.yml
 
+          - include: openshift-ansible/playbooks/byo/config.yml
         inventory:
-          compute:
-            hosts:
-              - get_attr: [RoleNetIpMap, Compute, ctlplane]
-          controller:
-            hosts:
-              - get_attr: [RoleNetIpMap, Controller, ctlplane]
-              
-          
+          overcloud:
+            children:
+              compute:
+                hosts:
+                  map_merge:
+                    repeat:
+                      template:
+                        IP: {}
+                      for_each:
+                        IP: {get_param: [RoleNetIpMap, Compute, ctlplane]}
+              controller:
+                hosts:
+                  map_merge:
+                    repeat:
+                      template:
+                        IP: {}
+                      for_each:
+                        IP: {get_param: [RoleNetIpMap, Controller, ctlplane]}
+
