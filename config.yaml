@@ -5,9 +5,7 @@
   tasks:
     - add_host: name={{item}} groups=nodes
       with_items: "{{groups['compute']}}"
-    - add_host: name={{item}} groups=nodes
-      with_items: "{{groups['controller']}}"
-    - add_host: name={{item}} groups=masters
+    - add_host: name={{item}} groups=nodes,masters
       with_items: "{{groups['controller']}}"
     - add_host: name={{item}} groups=OSEv3
       with_items: "{{groups['overcloud']}}"
