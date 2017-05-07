@@ -30,8 +30,9 @@ resources:
                 with_items: "{{groups['controller']}}"
               - add_host: name={{item}} groups=OSEv3
                 with_items: "{{groups['overcloud']}}"
-
-          - hosts: OSEv3
+          - include: openshift-ansible/playbooks/byo/config.yml
+        inventory:
+          OSEv3:
             vars:
               ansible_become: true
               ansible_become_user: root
@@ -42,9 +43,38 @@ resources:
               openshift_release: v1.5
               openshift_image_tag: v1.5.0
               enable_excluders: False
-
-          - include: openshift-ansible/playbooks/byo/config.yml
-        inventory:
+          controller:
+            hosts:
+              map_merge:
+                repeat:
+                  template:
+                    IP:
+                      containerized: true
+                      openshift_schedulable: true
+                      openshift_excluder_on: false
+                      connect_to: IP
+                      openshift_ip: IP
+                      openshift_hostname: IP
+                      openshift_public_ip: IP
+                      openshift_public_hostname: IP
+                  for_each:
+                    IP: {get_param: [RoleNetIpMap, Controller, ctlplane]}
+          compute:
+            hosts:
+              map_merge:
+                repeat:
+                  template:
+                    IP:
+                      containerized: true
+                      openshift_schedulable: true
+                      openshift_excluder_on: false
+                      connect_to: IP
+                      openshift_ip: IP
+                      openshift_hostname: IP
+                      openshift_public_ip: IP
+                      openshift_public_hostname: IP
+                  for_each:
+                    IP: {get_param: [RoleNetIpMap, Compute, ctlplane]}
           overcloud:
             children:
               compute:
@@ -79,4 +109,3 @@ resources:
                           openshift_public_hostname: IP
                       for_each:
                         IP: {get_param: [RoleNetIpMap, Controller, ctlplane]}
-
