@@ -23,7 +23,7 @@ cd
 cd
 git clone git://git.openstack.org/openstack/heat
 cd heat
-git fetch git://git.openstack.org/openstack/heat refs/changes/64/420664/9 && git cherry-pick FETCH_HEAD
+#git fetch git://git.openstack.org/openstack/heat refs/changes/64/420664/9 && git cherry-pick FETCH_HEAD
 sudo python setup.py install
 sudo systemctl restart openstack-heat-*
 
@@ -82,16 +82,29 @@ EOF_CAT
 cat > $HOME/stack-openshift-ansible.yaml <<-EOF_CAT
 heat_template_version: ocata
 
-resources:
-  execution:
-    type: OS::Mistral::ExternalResource
-    properties:
-      actions:
-        CREATE:
-          workflow: openshift-ansible
-      input:
-        inventory: $HOME/ansible-inventory
-        playbook: $HOME/openshift-ansible/playbooks/byo/config.yml
+outputs:
+  role_data:
+    service_name: openshift
+    description: Role data for the OpenShift Service
+    value:
+      service_workflow_tasks:
+        step1:
+          - name: Deploy OpenShift
+            action: openshift-ansible
+            input:
+              inventory: $HOME/ansible-inventory
+              playbook: $HOME/openshift-ansible/playbooks/byo/config.yml
+
+#resources:
+#  execution:
+#    type: OS::Mistral::ExternalResource
+#    properties:
+#      actions:
+#        CREATE:
+#          workflow: openshift-ansible
+#      input:
+#        inventory: $HOME/ansible-inventory
+#        playbook: $HOME/openshift-ansible/playbooks/byo/config.yml
 EOF_CAT
 
 #cat > $HOME/tripleo-heat-templates/environments/openshift.yaml <<-EOF_CAT
