@@ -1,0 +1,62 @@
+heat_template_version: ocata
+
+description: Triggers a Mistral workflow for the deployment of Kubernetes
+
+parameters:
+  RoleNetIpMap:
+    default: {}
+    type: json
+  ServiceNetMap:
+    default: {}
+    description: Mapping of service_name -> network name. Typically set
+                 via parameter_defaults in the resource registry.  This
+                 mapping overrides those in ServiceNetMapDefaults.
+    type: json
+  DefaultPasswords:
+    default: {}
+    type: json
+  RoleName:
+    default: ''
+    description: Role name on which the service is applied
+    type: string
+  RoleParameters:
+    default: {}
+    description: Parameters specific to the role
+    type: json
+  EndpointMap:
+    default: {}
+    description: Mapping of service endpoint -> protocol. Typically set
+                 via parameter_defaults in the resource registry.
+    type: json
+
+outputs:
+  role_data:
+    description: Role data for the Kubernetes Service
+    value:
+      service_name: kubernetes_master
+      config_settings: {}
+      upgrade_tasks: []
+      step_config: ''
+      service_workflow_tasks:
+        step1:
+          - name: Deploy Kubernetes
+            action: ansible-playbook
+            input:
+              playbook:
+                - include: kargo/cluster.yaml
+              inventory: |
+                kube-master: &master
+                  hosts: {
+                    {% for ip in env().service_ips.kubernetes_master_ctlplane_node_ips %}'{{ ip }}': {},{% endfor %}}
+                kube-node: &node
+                  hosts: {
+                    {% for ip in env().service_ips.kubernetes_worker_ctlplane_node_ips %}'{{ ip }}': {},{% endfor %}}
+                etcd: *master
+                k8s-cluster:
+                  vars:
+                    ansible_become: true
+                    ansible_become_user: root
+                    ansible_ssh_user: heat-admin
+                  children:
+                    kube-node: *node
+                    kube-master: *master

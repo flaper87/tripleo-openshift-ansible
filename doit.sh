@@ -43,9 +43,10 @@ sudo python setup.py develop
 cd
 git clone git://git.openstack.org/openstack/tripleo-heat-templates
 cd tripleo-heat-templates
-ln -sf $HOME/tripleo-openshift-ansible/tht/openshift .
+ln -sf $HOME/tripleo-openshift-ansible/tht/coe .
 cd environments
-ln -sf $HOME/tripleo-openshift-ansible/tht/environment.yaml openshift.yaml
+ln -sf $HOME/tripleo-openshift-ansible/tht/environments/openshift.yaml openshift.yaml
+ln -sf $HOME/tripleo-openshift-ansible/tht/environments/kubernetes.yaml kubernetes.yaml
 
 # MISTRAL ANSIBLE ACTION
 cd

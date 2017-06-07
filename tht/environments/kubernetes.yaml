@@ -1,7 +1,8 @@
 resource_registry:
   OS::TripleO::Services::Docker: ../puppet/services/docker.yaml
-  OS::TripleO::Services::OpenShift: ../openshift/openshift.yaml
-  
+  OS::TripleO::Services::Kubernetes::Worker: ../coe/kubernetes-worker.yaml
+  OS::TripleO::Services::Kubernetes::Master: ../coe/kubernetes-master.yaml
+
 parameter_defaults:
   OvercloudControlFlavor: control
   OvercloudComputeFlavor: compute

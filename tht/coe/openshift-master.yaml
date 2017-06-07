@@ -1,0 +1,82 @@
+heat_template_version: ocata
+
+description: Triggers a Mistral workflow for the deployment of OpenShift
+
+parameters:
+  OpenShiftAnsibleWorkflowName:
+    type: string
+    description: Name of the Mistral workflow deploying OpenShift
+    default: openshift-ansible
+  RoleNetIpMap:
+    default: {}
+    type: json
+  ServiceNetMap:
+    default: {}
+    description: Mapping of service_name -> network name. Typically set
+                 via parameter_defaults in the resource registry.  This
+                 mapping overrides those in ServiceNetMapDefaults.
+    type: json
+  DefaultPasswords:
+    default: {}
+    type: json
+  RoleName:
+    default: ''
+    description: Role name on which the service is applied
+    type: string
+  RoleParameters:
+    default: {}
+    description: Parameters specific to the role
+    type: json
+  EndpointMap:
+    default: {}
+    description: Mapping of service endpoint -> protocol. Typically set
+                 via parameter_defaults in the resource registry.
+    type: json
+
+outputs:
+  role_data:
+    description: Role data for the OpenShift Service
+    value:
+      service_name: openshift_master
+      config_settings: {}
+      upgrade_tasks: []
+      step_config: ''
+      service_workflow_tasks:
+        step1:
+          - name: Deploy OpenShift
+            action: ansible-playbook 
+            input:
+              playbook:
+                - name: Register nodes
+                  hosts: localhost
+      
+                  tasks:
+                    - add_host: name={{'{{'}}item{{'}}'}} groups=nodes
+                      with_items: "{%raw%}{{groups['compute']}}{%endraw%}"
+                    - add_host: name={{'{{'}}item{{'}}'}} groups=nodes,masters
+                      with_items: "{%raw%}{{groups['controller']}}{%endraw%}"
+                    - add_host: name={{'{{'}}item{{'}}'}} groups=OSEv3
+                      with_items: "{%raw%}{{groups['overcloud']}}{%endraw%}"
+                - include: openshift-ansible/playbooks/byo/config.yml
+              inventory: | 
+                OSEv3:
+                  vars:
+                    ansible_become: true
+                    ansible_become_user: root
+                    ansible_ssh_user: heat-admin
+                    containerized: true
+                    openshift_use_dnsmasq: False
+                    openshift_deployment_type: origin
+                    openshift_release: v1.5
+                    openshift_image_tag: v1.5.0
+                    enable_excluders: False
+                controller: &controller
+                  hosts: {
+                    {% for ip in env().service_ips.openshift_master_ctlplane_node_ips %}'{{ ip }}': {},{% endfor %}}
+                compute: &compute
+                  hosts: {
+                    {% for ip in env().service_ips.openshift_worker_ctlplane_node_ips %}'{{ ip }}': {},{% endfor %}}
+                overcloud:
+                  children:
+                    compute: *compute
+                    controller: *controller
